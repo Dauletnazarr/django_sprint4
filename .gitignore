@@ -147,6 +147,7 @@ dmypy.json
 
 # папки со статикой и медиа
 media/
+posts_images/
 
 sent_emails/
 
