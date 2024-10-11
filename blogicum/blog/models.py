@@ -59,7 +59,9 @@ class Location(PublishedModel):
 
 
 class Post(PublishedModel):
-    title = models.CharField(max_length=LONG_TEXT_LENGTH, verbose_name='Заголовок')
+    title = models.CharField(
+        max_length=LONG_TEXT_LENGTH, verbose_name='Заголовок'
+    )
     text = models.TextField(verbose_name='Текст')
     pub_date = models.DateTimeField(
         verbose_name='Дата и время публикации',
