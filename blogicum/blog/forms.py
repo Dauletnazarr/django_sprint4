@@ -1,9 +1,7 @@
 from django import forms
-
-# Импортируем класс модели Birthday.
-from .models import Post, Comment
-
 from django.core.mail import send_mail
+
+from .models import Post, Comment
 
 
 class PostForm(forms.ModelForm):
@@ -11,10 +9,9 @@ class PostForm(forms.ModelForm):
     class Meta:
         model = Post
         exclude = ('author',)
-        fields = '__all__'
         widgets = {
             'pub_date': forms.DateTimeInput(
-                attrs={'type': 'date'}),
+                attrs={'type': 'datetime-local'}),
         }
 
 

@@ -35,6 +35,7 @@ ALLOWED_HOSTS = [
 
 CSRF_FAILURE_VIEW = 'pages.views.csrf_failure'
 LOGIN_REDIRECT_URL = 'blog:index'
+POSTS_LIMIT = 10
 
 
 # Application definition
