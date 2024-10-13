@@ -23,12 +23,12 @@ post_urls = [
     ),
     path('<int:comment_id>/comment/', views.add_comment, name='add_comment'),
     path(
-        '<int:post_id>/delete_comment/<int:pk>',
+        '<int:post_id>/delete_comment/<int:comment_id>',
         views.CommentDeleteView.as_view(),
         name='delete_comment'
     ),
     path(
-        '<int:post_id>/edit_comment/<int:pk>',
+        '<int:post_id>/edit_comment/<int:comment_id>',
         views.CommentUpdateView.as_view(),
         name='edit_comment'),
 ]

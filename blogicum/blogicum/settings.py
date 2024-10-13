@@ -28,6 +28,8 @@ DEBUG = True
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
+    'www.rickysucesso.pythonanywhere.com',
+    'rickysucesso.pythonanywhere.com',
     # Когда проект будет опубликован и станет доступен для пользователей,
     # в этот список нужно будет добавить и адреса домена, где он будет размещён,
     # например 'acme.not' и 'www.acme.not'

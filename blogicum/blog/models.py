@@ -75,6 +75,7 @@ class Post(PublishedModel):
     )
     location = models.ForeignKey(
         Location,
+        blank=True,
         verbose_name='Местоположение',
         on_delete=models.SET_NULL,
         null=True
@@ -90,7 +91,7 @@ class Post(PublishedModel):
     class Meta:
         verbose_name = 'публикация'
         verbose_name_plural = 'Публикации'
-        ordering = ('title',)
+        ordering = ('pub_date',)
         default_related_name = 'posts'
 
     def get_absolute_url(self):
@@ -109,11 +110,17 @@ class Comment(models.Model):
         null=True,
         related_name='comments',
     )
-    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(
         User, on_delete=models.CASCADE,
-        null=True
+        null=True,
+        related_name='author',
     )
 
     class Meta:
         ordering = ('created_at',)
+        verbose_name = 'комментарий'
+        verbose_name_plural = 'Комментарии'
+
+    def __str__(self):
+        return self.text
