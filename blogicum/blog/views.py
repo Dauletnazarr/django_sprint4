@@ -168,16 +168,12 @@ class UserProfileView(ListView):
 
     def get_queryset(self):
         selected_user = self.get_user()
-        if selected_user == self.request.user:
-            return filter_posts(
-                apply_filters=False,
-                add_annotations=True
-            ).filter(author=selected_user).order_by('-pub_date')
-        else:
-            return filter_posts(
-                apply_filters=True,
-                add_annotations=True
-            ).filter(author=selected_user).order_by('-pub_date')
+        queryset = filter_posts(
+            apply_filters=selected_user != self.request.user,
+            add_annotations=True
+        ).filter(author=selected_user).order_by('-pub_date')
+        return queryset
+
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
