@@ -2,10 +2,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.conf import settings as s
-from django.db.models import Count
-from django.http import Http404
 from django.urls import reverse_lazy
-from django.utils import timezone
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.generic import (
     CreateView, DeleteView, UpdateView, DetailView, ListView
@@ -13,28 +10,7 @@ from django.views.generic import (
 
 from blog.models import Post, Category
 from blog.forms import PostForm, CommentForm
-from blog.mixins import OnlyAuthorMixin, CommentMixin
-
-
-def filter_posts(
-        manager=Post.objects, apply_filters=True, add_annotations=False
-):
-
-    queryset = manager.select_related('author', 'location', 'category')
-
-    if apply_filters:
-        queryset = queryset.filter(
-            pub_date__lte=timezone.now(),
-            is_published=True,
-            category__is_published=True
-        )
-
-    if add_annotations:
-        queryset = queryset.annotate(
-            comment_count=Count('comments')
-        ).order_by('-comment_count')
-
-    return queryset
+from blog.mixins_filters import OnlyAuthorMixin, CommentMixin, filter_posts
 
 
 @login_required
@@ -59,10 +35,9 @@ class IndexView(ListView):
 
     def get_queryset(self):
         return filter_posts(
-            manager=Post.objects,
             apply_filters=True,
             add_annotations=True
-        ).order_by('-pub_date')
+        )
 
 
 class CategoryPostsView(ListView):
@@ -121,9 +96,15 @@ class PostDetailView(DetailView):
         return context
 
     def get_object(self, queryset=None):
-        post = get_object_or_404(Post, id=self.kwargs['post_id'])
-        if not post.is_published and post.author != self.request.user:
-            raise Http404("Нет доступа к этой странице")
+        post = get_object_or_404(
+            (filter_posts(apply_filters=False, add_annotations=False)),
+            id=self.kwargs[self.pk_url_kwarg]
+        )
+        if post.author != self.request.user:
+            post = get_object_or_404(
+                (filter_posts(apply_filters=True, add_annotations=False)),
+                id=self.kwargs[self.pk_url_kwarg]
+            )
         return post
 
 
@@ -134,7 +115,10 @@ class PostUpdateView(OnlyAuthorMixin, UpdateView):
     pk_url_kwarg = 'post_id'
 
     def handle_no_permission(self):
-        return redirect('blog:post_detail', post_id=self.kwargs['post_id'])
+        return redirect(
+            'blog:post_detail',
+            post_id=self.kwargs[self.pk_url_kwarg]
+        )
 
     def get_success_url(self):
         return reverse_lazy('blog:post_detail', kwargs={
